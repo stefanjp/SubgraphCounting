@@ -65,7 +65,7 @@ def create_star(vertex_count: int):
 
     Returns
     ----------
-    Undirected clique.
+    Undirected star.
     """
     edges = [(0, x + 1) for x in range(vertex_count - 1)]
     return Graph(n=vertex_count, edges=edges)
