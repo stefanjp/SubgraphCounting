@@ -6,8 +6,14 @@ import numpy as np
 import igraph
 from subgraph_counting.graph import Graph
 
+
 def graph_to_igraph(graph: Graph):
-    return igraph.Graph(n=graph.get_num_nodes(), edges=graph.get_edge_indices(), directed=graph.is_directed())
+    return igraph.Graph(
+        n=graph.get_num_nodes(),
+        edges=graph.get_edge_indices(),
+        directed=graph.is_directed(),
+    )
+
 
 def igraph_to_pyg_graph(igraph: igraph.Graph):
     edges = []
@@ -18,13 +24,15 @@ def igraph_to_pyg_graph(igraph: igraph.Graph):
     data.num_nodes = igraph.vcount()
     return data
 
+
 def _tensor_to_color(tensor: torch.Tensor):
     array = tensor.numpy()
     if array.size == 1 and np.issubdtype(array.dtype, np.integer):
         return array.item()
     else:
         return hash(array.data.tobytes())
-    
+
+
 def _tensor_to_label(tensor: torch.Tensor):
     array = tensor.numpy()
     if array.size == 1:
@@ -32,22 +40,28 @@ def _tensor_to_label(tensor: torch.Tensor):
     else:
         return str(array)
 
-def to_color(tensor: torch.Tensor,
-  conversion_function: Callable[[torch.Tensor], int] | None = None) -> list[int]:
+
+def to_color(
+    tensor: torch.Tensor,
+    conversion_function: Callable[[torch.Tensor], int] | None = None,
+) -> list[int]:
     if conversion_function is None:
         conversion_function = _tensor_to_color
     return [conversion_function(data) for data in tensor]
 
-def to_label(tensor: torch.Tensor,
-  conversion_function: Callable[[torch.Tensor], str] | None = None) -> list[str]:
+
+def to_label(
+    tensor: torch.Tensor,
+    conversion_function: Callable[[torch.Tensor], str] | None = None,
+) -> list[str]:
     if conversion_function is None:
         conversion_function = _tensor_to_label
     return [conversion_function(data) for data in tensor]
-    
-def get_duplicate_edge_mask(edge_index: torch.Tensor,
-  order_strict:bool = False):
+
+
+def get_duplicate_edge_mask(edge_index: torch.Tensor, order_strict: bool = False):
     """Get boolean torch mask. Mask is of shape [N],
-        where N is the number of edges. Edges that appear more 
+        where N is the number of edges. Edges that appear more
         than once, between two nodes, are marked as True in the mask.
         Pass the inverted mask to conversion functions,
         if you want to delete duplicate edges.
