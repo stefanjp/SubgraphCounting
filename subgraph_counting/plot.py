@@ -28,7 +28,7 @@ def attributes_to_hexcolor(attributes: list[int]):
         attr_map = {unique_attributes[i] : matplotlib.colors.to_hex(cmap(i)) for i in range(len(unique_attributes))}
     return [attr_map[attr] for attr in attributes]
 
-def _plot_graph(
+def plot_graph(
   graph: Graph,
   fname: str | None = None,
   visual_style: dict[str, Any] | None = None):
@@ -41,31 +41,3 @@ def _plot_graph(
     if fname:
         fig.savefig(fname, facecolor='white')
     return fig, axes
-
-def plot_graph(
-  graph: Graph,
-  fname: str | None = None,
-  node_attributes: list[int] | None = None,
-  node_labels: list[str] | None = None,
-  edge_attributes: list[int] | None = None,
-  edge_labels: list[str] | None = None,
-  subgraph_node_mask: list | None = None,
-  subgraph_edge_mask: list | None = None,
-  visual_style: dict | None = None):
-    """Plot graph with optional node/edge colors and labels"""
-    assert(not (subgraph_node_mask and node_attributes))
-    if not visual_style:
-        visual_style = {}
-    if node_attributes:
-        visual_style["vertex_color"] = attributes_to_hexcolor(node_attributes)
-    if node_labels:
-        visual_style["vertex_label"] = node_labels
-    if edge_attributes:
-        visual_style["edge_color"] = attributes_to_hexcolor(edge_attributes)
-    if edge_labels:
-        visual_style["edge_label"] = edge_labels
-    if subgraph_node_mask:
-        visual_style["vertex_color"] = ['red' if mask else 'white' for mask in subgraph_node_mask]
-    if subgraph_edge_mask:
-        visual_style["edge_width"] = [3 if mask else 1 for mask in subgraph_edge_mask]
-    return _plot_graph(graph, fname, visual_style)

@@ -3,8 +3,8 @@ from torch_geometric.datasets import ZINC
 from torch_geometric.data import Data
 from torch_geometric.utils.random import erdos_renyi_graph
 
-def get_zinc_dataset() -> dict[str, ZINC]:
-    return {split: ZINC(root="./data/datasets/ZINC", subset=True, split=split) for split in ["train", "val", "test"]}
+def get_zinc_dataset(root:str="./data/datasets/ZINC") -> dict[str, ZINC]:
+    return {split: ZINC(root=root, subset=True, split=split) for split in ["train", "val", "test"]}
 
 def get_zachary_graph() -> Data:
     """Graph from http://www1.ind.ku.dk/complexLearning/zachary1977.pdf paper"""
