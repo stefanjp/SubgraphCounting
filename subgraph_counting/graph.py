@@ -143,16 +143,13 @@ def _get_subgraph_mask(graph: Graph, subgraph: Graph, subgraph_node_lists: list)
     Parameters
     ----------
     graph : Graph
-        _description_
     subgraph : Graph
-        _description_
     subgraph_node_lists : list
-        _description_
 
     Returns
     -------
-    _type_
-        _description_
+    list, list
+        Returns node_mask, edge_mask. Two lists of boolean values where True values mark nodes and edges of the subgraph
     """
     subgraph_edges = set()
     subgraph_nodes = set()
@@ -163,12 +160,13 @@ def _get_subgraph_mask(graph: Graph, subgraph: Graph, subgraph_node_lists: list)
         if directed:
             for sub_edge in subgraph.get_edge_indices():
                 subgraph_edges.add((g_sub_to_g_vertex[sub_edge[0]], g_sub_to_g_vertex[sub_edge[1]]))
+            edge_mask = [True if edge in subgraph_edges else False for edge in graph.get_edge_indices()]
         else:
             for sub_edge in subgraph.get_edge_indices():
                 source = g_sub_to_g_vertex[sub_edge[0]]
                 target = g_sub_to_g_vertex[sub_edge[1]]
                 subgraph_edges.add((min(source, target), max(source, target)))
-    edge_mask = [True if tuple(sorted(edge)) in subgraph_edges else False for edge in graph.get_edge_indices()]
+            edge_mask = [True if tuple(sorted(edge)) in subgraph_edges else False for edge in graph.get_edge_indices()]
     node_mask = [True if node in subgraph_nodes else False for node in range(graph.get_num_nodes())]
     return node_mask, edge_mask
 
