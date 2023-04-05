@@ -1,9 +1,23 @@
+"""Convenience functions for graph generation used mainly for testing"""
 import torch
 from torch_geometric.datasets import ZINC
 from torch_geometric.data import Data
 from torch_geometric.utils.random import erdos_renyi_graph
 
 def get_zinc_dataset(root:str="./data/datasets/ZINC") -> dict[str, ZINC]:
+    """Load and store ZINC dataset
+
+    Parameters
+    ----------
+    root : str, optional
+        root directory for file storage, by default "./data/datasets/ZINC"
+
+    Returns
+    -------
+    dict[str, ZINC]
+        returns dict of train, val and test data.
+        keys are "train", "val", "test". values are the datasets
+    """
     return {split: ZINC(root=root, subset=True, split=split) for split in ["train", "val", "test"]}
 
 def get_zachary_graph() -> Data:
@@ -30,7 +44,7 @@ def get_zachary_graph() -> Data:
         20, 22, 23, 29, 30, 31, 33, 8, 9, 13, 14, 15, 18, 19, 20, 22, 23,
         26, 27, 28, 29, 30, 31, 32
     ]
-    edge_index = torch.tensor([row, col])
+    edge_index = torch.as_tensor([row, col])
     x = torch.arange(1,35)
     edge_attr = torch.arange(1, len(col) + 1)
     data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)

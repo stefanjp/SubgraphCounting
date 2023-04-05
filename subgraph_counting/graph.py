@@ -2,7 +2,7 @@
 
 from __future__ import annotations  # enable typehint to incomplete class
 from torch_geometric.data import Data
-from subgraph_counting import conversion, plot, helpers
+from subgraph_counting import conversion, plot
 import torch_geometric.utils.undirected as undirected
 from typing import Callable, Tuple
 import igraph
@@ -137,6 +137,8 @@ class Graph:
         return subisomorphism_count / automorphisms
 
     def is_directed(self):
+        """Returns True, if the graph is a directed graph.
+        """
         return self._graph_is_directed
 
     def get_subisomorphisms(self, subgraph: Graph) -> list:
@@ -206,7 +208,8 @@ def _get_subgraph_mask(graph: Graph, subgraph: Graph, subgraph_node_lists: list)
     Returns
     -------
     list, list
-        Returns node_mask, edge_mask. Two lists of boolean values where True values mark nodes and edges of the subgraph
+        Returns node_mask, edge_mask. Two lists of boolean 
+        values where True values mark nodes and edges of the subgraph.
     """
     subgraph_edges = set()
     subgraph_nodes = set()
