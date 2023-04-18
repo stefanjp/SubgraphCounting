@@ -1,8 +1,14 @@
 """Convenience functions for graph generation used mainly for testing"""
+from typing import Union, List, Tuple
+import os.path as osp
+
 import torch
 from torch_geometric.datasets import ZINC
 from torch_geometric.data import Data
 from torch_geometric.utils.random import erdos_renyi_graph
+
+def get_annotated_zinc_datalist(root:str="./data/datasets/ZINC") -> dict[str, list[Data]]:
+    return {split: torch.load(osp.join(root, f'{split}.datalist')) for split in ["train", "val", "test"]}
 
 def get_zinc_dataset(root:str="./data/datasets/ZINC") -> dict[str, ZINC]:
     """Load and store ZINC dataset
