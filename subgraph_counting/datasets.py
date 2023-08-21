@@ -1,5 +1,5 @@
 """Convenience functions for graph generation used mainly for testing"""
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Callable
 import os.path as osp
 
 import torch
@@ -10,21 +10,22 @@ from torch_geometric.utils.random import erdos_renyi_graph
 def get_annotated_zinc_datalist(root:str="./data/datasets/ZINC") -> dict[str, list[Data]]:
     return {split: torch.load(osp.join(root, f'{split}.datalist')) for split in ["train", "val", "test"]}
 
-def get_zinc_dataset(root:str="./data/datasets/ZINC") -> dict[str, ZINC]:
+def get_zinc_dataset(root:str="./data/datasets/ZINC", pre_transform: Callable|None = None, transform: Callable|None = None) -> dict[str, ZINC]:
     """Load and store ZINC dataset
 
     Parameters
     ----------
     root : str, optional
         root directory for file storage, by default "./data/datasets/ZINC"
-
+    pre_transform: Callable, optional
+        transformation before saving to disc
     Returns
     -------
     dict[str, ZINC]
         returns dict of train, val and test data.
         keys are "train", "val", "test". values are the datasets
     """
-    return {split: ZINC(root=root, subset=True, split=split) for split in ["train", "val", "test"]}
+    return {split: ZINC(root=root, subset=True, split=split, pre_transform=pre_transform, transform=transform) for split in ["train", "val", "test"]}
 
 def get_zachary_graph() -> Data:
     """Graph from http://www1.ind.ku.dk/complexLearning/zachary1977.pdf paper"""
@@ -52,7 +53,7 @@ def get_zachary_graph() -> Data:
     ]
     edge_index = torch.as_tensor([row, col])
     x = torch.arange(1,35)
-    edge_attr = torch.arange(1, len(col) + 1)
+    edge_attr = torch.arange(1, len(col) + 1) ** 2
     data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
     return data
 

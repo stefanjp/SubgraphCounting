@@ -7,19 +7,14 @@ import igraph
 from subgraph_counting.graph import Graph
 
 
-def graph_to_igraph(graph: Graph):
-    return igraph.Graph(
-        n=graph.get_num_nodes(),
-        edges=graph.get_edge_indices(),
-        directed=graph.is_directed(),
-    )
-
-
 def igraph_to_pyg_graph(igraph: igraph.Graph):
     edges = []
     for edge in igraph.es:
         edges.append(torch.as_tensor(edge.tuple))
-    edge_index = torch.stack(edges, dim=1)
+    if len(edges) > 0:
+        edge_index = torch.stack(edges, dim=1)
+    else:
+        edge_index = None
     data = Data(edge_index=edge_index)
     data.num_nodes = igraph.vcount()
     return data
