@@ -1,6 +1,7 @@
 # project specific
 data/
 tmp/
+tb-logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
