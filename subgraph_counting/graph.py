@@ -184,6 +184,8 @@ class Graph:
             visual_style["vertex_color"] = plot.attributes_to_hexcolor(
                 self.get_node_colors()
             )
+        else:
+            visual_style["vertex_color"] = 'white'
         if node_labels:
             visual_style["vertex_label"] = self.get_node_labels()
         if edge_colors:
