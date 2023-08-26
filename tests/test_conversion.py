@@ -1,7 +1,6 @@
 """Test graph and attribute conversion"""
 import unittest
 import torch
-from subgraph_counting import conversion
 from subgraph_counting.graph import Graph
 import subgraph_counting.graph as scg
 from subgraph_counting.datasets import get_random_graph, get_zachary_graph

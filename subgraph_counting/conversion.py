@@ -4,7 +4,6 @@ from torch_geometric.data import Data
 import torch
 import numpy as np
 import igraph
-from subgraph_counting.graph import Graph
 
 
 def igraph_to_pyg_graph(igraph: igraph.Graph):

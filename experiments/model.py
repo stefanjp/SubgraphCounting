@@ -1,5 +1,3 @@
-from typing import Any, Optional
-from pytorch_lightning.utilities.types import STEP_OUTPUT
 from torch_geometric.nn import GraphConv, Linear, BatchNorm, Sequential, global_add_pool
 import torch.nn as nn
 import torch

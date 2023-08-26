@@ -1,5 +1,5 @@
 """Convenience functions for graph generation used mainly for testing"""
-from typing import Union, List, Tuple, Callable
+from typing import Callable
 import os.path as osp
 
 import torch
