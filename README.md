@@ -16,13 +16,26 @@ export PYTHONPATH=$PYTHONPATH:<PROJECT_ROOT>
 ```
 where <PROJECT_ROOT> is the project root.
 
+Dependencies
+
+Used following conda channels:
+- conda-forge
+- pytorch
+- pyg
+
 ```
 conda install pytorch==1.12.0 torchvision==0.13.0 torchaudio==0.12.0 -c pytorch
 conda install pyg -c pyg 
 conda install python-igraph matplotlib -c conda-forge
+conda install pytorch-lightning -c conda-forge
+
+```
+or create a new environment (might only work on Windows)
+```
+conda create --name <env> --file requirements.txt
 ```
 
-Tested on Windows 11 with following package versions:
+Code was developed and tested on Windows 11 with following package versions:
 * pyg==2.1.0
 * python-igraph==0.10.4
 * pytorch==1.12.0
