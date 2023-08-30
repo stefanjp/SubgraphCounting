@@ -27,6 +27,10 @@ def plot_cycle_in_zachary_graph():
             "edge_label_size": edge_font_size,
         },
     )
+
+
 if __name__ == "__main__":
     # execute graph substructure counting examples
     plot_cycle_in_zachary_graph()
+    plot_star()
+    plot_cycle()
