@@ -8,11 +8,43 @@ import subgraph_counting.graph as scg
 
 @functional_transform('annotate_subgraphisomorphisms')
 class AnnotateSubgraphIsomorphisms(BaseTransform):
-    r"""Counts and annotates subgraphstructures.
+    """Counts and annotates subgraphstructures.
 
-    Args:
-        force_undirected (bool, optional): If set to :obj:`True`, new edges
-            will be undirected. (default: :obj:`False`)
+    Parameters
+    ----------
+        subgraphs : Sequence[Data]
+            Sequence of subgraphs that are counted. The annotation
+            is a torch Tensor that has one entry for each subgraph
+            in the sequence.
+        force_undirected : bool, default=False
+            If set to True, the edges of both the graph and the 
+            subgraphs will be transformed to undirected graphs.
+        to_undirected_reduce: str, default="mean"
+            See torch_geometric.utils.undirected.to_undirected
+            parameter reduce.
+        node_attribute: str, optional
+            If set (e.g. to 'x'), the attribute is used for using 
+            code colors for subgraph matching. Both the graph in 
+            the dataset and the subgraph are required to have this
+            attribute.
+        node_attribute_to_color: Callable[[torch.Tensor], int], optional
+            Function to map torch.Tensor to node color for node 
+            attribute matching. There is a default implementation
+            that should always work for torch.Tensors containing a 
+            single value per node. Also for more dimensional values
+            there is an implementation using a hash function that 
+            might yield incorrect results in some cases.
+        edge_attribute: str, optional
+            Equivalent to node_attribute but for edges.
+        edge_attribute_to_color: Callable[[torch.Tensor], int], optional
+            Equivalent to node_attribute_to_color but for edges.
+        target_attribute: str, default="y"
+            The value will be assigned to this graph-level attribute
+            in the returned data object.
+
+    Returns
+    ----------
+        Transformed data object.
     """
     def __init__(
         self,
@@ -21,10 +53,8 @@ class AnnotateSubgraphIsomorphisms(BaseTransform):
         to_undirected_reduce: str = "mean",
         node_attribute: str | None = None,
         node_attribute_to_color: Callable[[torch.Tensor], int] | None = None,
-        node_attribute_to_label: Callable[[torch.Tensor], str] | None = None,
         edge_attribute: str | None = None,
         edge_attribute_to_color: Callable[[torch.Tensor], int] | None = None,
-        edge_attribute_to_label: Callable[[torch.Tensor], str] | None = None,
         target_attribute: str = "y"
     ):
         self.subgraphs = subgraphs
@@ -32,10 +62,8 @@ class AnnotateSubgraphIsomorphisms(BaseTransform):
         self.to_undirected_reduce = to_undirected_reduce
         self.node_attribute = node_attribute
         self.node_attribute_to_color = node_attribute_to_color
-        self.node_attribute_to_label = node_attribute_to_label
         self.edge_attribute = edge_attribute
         self.edge_attribute_to_color = edge_attribute_to_color
-        self.edge_attribute_to_label = edge_attribute_to_label
         self.target_attribute = target_attribute
 
     def __call__(self, data: Data) -> Data:
@@ -44,10 +72,8 @@ class AnnotateSubgraphIsomorphisms(BaseTransform):
                           self.to_undirected_reduce,
                           self.node_attribute,
                           self.node_attribute_to_color,
-                          self.node_attribute_to_label,
                           self.edge_attribute,
-                          self.edge_attribute_to_color,
-                          self.edge_attribute_to_label)
+                          self.edge_attribute_to_color)
         y = []
         for sg in self.subgraphs:
             subgraph = scg.Graph(sg,
@@ -55,10 +81,8 @@ class AnnotateSubgraphIsomorphisms(BaseTransform):
                 self.to_undirected_reduce,
                 self.node_attribute,
                 self.node_attribute_to_color,
-                self.node_attribute_to_label,
                 self.edge_attribute,
-                self.edge_attribute_to_color,
-                self.edge_attribute_to_label)
+                self.edge_attribute_to_color)
             subisomorphisms = graph.count_subisomorphisms(subgraph)
             y.append(subisomorphisms)
         data[self.target_attribute] = torch.as_tensor(y)

@@ -185,7 +185,8 @@ class Graph:
                 self.get_node_colors()
             )
         else:
-            visual_style["vertex_color"] = 'white'
+            if "vertex_color" not in visual_style:
+                visual_style["vertex_color"] ='white'
         if node_labels:
             visual_style["vertex_label"] = self.get_node_labels()
         if edge_colors:

@@ -4,14 +4,19 @@ from experiments.transform import (
     Select,
     NormNodeAttribute,
 )
+import torch
+from torch_geometric.data import Data
 from torch_geometric.transforms.compose import Compose
 import itertools
 import random
 
-def get_configs(config, count):
+def get_configs(config, count=None):
     keys, values = zip(*config.items())
     experiments = [dict(zip(keys, v)) for v in itertools.product(*values)]
-    return random.sample(experiments, count)
+    if count is None:
+        return experiments
+    else:
+        return random.sample(experiments, count)
 
 def get_dataset(dataset_id, path="./data/datasets/ZINC"):
     if dataset_id == 'ZINC-cycle-3-cycle-6':
@@ -22,6 +27,31 @@ def get_dataset(dataset_id, path="./data/datasets/ZINC"):
             subgraph_patterns.append(conversion.igraph_to_pyg_graph(subgraph_pattern))
         pre_transform = AnnotateSubgraphIsomorphisms(subgraph_patterns, True)
         transform = Compose([NormNodeAttribute("x", norm=1 / 20), Select("y", 0, [0, 3])])
+        # subgraph isomorphism of cycle 6 is annotated
+        return datasets.get_zinc_dataset(
+            f"{path}/cycle3-9", pre_transform=pre_transform, transform=transform
+        )
+    elif dataset_id == 'ZINC-cycle-6-node-features': # takes node features into account for graph substructure counting
+        # load ZINC dataset with annotated subgraph isomorphisms of selected pattern(s)
+        subgraph_pattern = conversion.igraph_to_pyg_graph(pattern.create_cycle(6))
+        subgraph_pattern = Data(
+            x=torch.as_tensor([0 for _ in range(6)]),
+            edge_index=subgraph_pattern.edge_index,
+        )
+        pre_transform = AnnotateSubgraphIsomorphisms([subgraph_pattern], True, node_attribute='x')
+        transform = Compose([NormNodeAttribute("x", norm=1 / 20)])
+        # subgraph isomorphism of cycle 6 is annotated
+        return datasets.get_zinc_dataset(
+            f"{path}/cycle6", pre_transform=pre_transform, transform=transform
+        )
+    elif dataset_id == 'ZINC-cycle-3':
+        # load ZINC dataset with annotated subgraph isomorphisms of selected pattern(s)
+        subgraph_patterns = []
+        for i in range(3, 10):
+            subgraph_pattern = pattern.create_cycle(i)
+            subgraph_patterns.append(conversion.igraph_to_pyg_graph(subgraph_pattern))
+        pre_transform = AnnotateSubgraphIsomorphisms(subgraph_patterns, True)
+        transform = Compose([NormNodeAttribute("x", norm=1 / 20), Select("y", 0, [0])])
         # subgraph isomorphism of cycle 6 is annotated
         return datasets.get_zinc_dataset(
             f"{path}/cycle3-9", pre_transform=pre_transform, transform=transform
