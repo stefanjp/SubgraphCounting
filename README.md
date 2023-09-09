@@ -40,8 +40,19 @@ Code was developed and tested on Windows 11 with following package versions:
 * python-igraph==0.10.4
 * pytorch==1.12.0
 
-## Usage
-TODO
+## Experiments
+From the project root directory execute following python files:
+- python experiments/run_star_experiments.py
+   - loss
+/val-feature-0 correspons to the MSE of 3-star
+   - loss
+/val-feature-1 correspons to the MSE of 4-star
+- python experiments/run_cycle_experiments.py
+   - loss
+/val-feature-0 correspons to the MSE of 3-cycle
+   - loss
+/val-feature-1 correspons to the MSE of 6-cycle
+- python experiments/run_cycle_experiments_node_features.py
+   - same as above
 
-
-## Contribution
+The baseline results as well as the model results will be logged in the tb-logs directory that can be visualized with tensorboard.

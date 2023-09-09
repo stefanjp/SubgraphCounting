@@ -6,7 +6,7 @@ import pytorch_lightning as L
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 
-from experiments.model import LightningBaseline, LightningGraphConv
+from experiments.model import LightningBaseline, LightningGraphConv, LightningI2GNN
 from experiments.util import get_dataset
 
 
@@ -55,7 +55,7 @@ def experiment(config, log_path="tb-logs", patience=10):
     # If called by wandb.agent, as below,
     # this config will be set by Sweep Controller
     datasets_pyg = get_dataset(config["dataset"])
-    task_name = config["dataset"]
+    task_name = f"{config['dataset']}-{config['model']}" if "model" in config else config['dataset']
     batch_size = config["batch_size"]
     train_loader = DataLoader(datasets_pyg["train"], batch_size, shuffle=True)
     val_loader = DataLoader(datasets_pyg["val"], batch_size)
@@ -69,17 +69,21 @@ def experiment(config, log_path="tb-logs", patience=10):
     dropout_conv = config["dropout_conv"]
     dropout_mlp = config["dropout_mlp"]
     graph_level_mlp_layers = config["graph_level_mlp_layers"]
-
-    model = LightningGraphConv(
-        target_size=target_features_size,
-        input_size=node_feature_size,
-        hidden_size=hidden_size,
-        lr=lr,
-        graph_level_mlp_layers=graph_level_mlp_layers,
-        dropout_conv=dropout_conv,
-        dropout_mlp=dropout_mlp,
-        batch_size=batch_size,
-    )
+    if "model" in config and config["model"] == "i2gnn":
+        model = LightningI2GNN(
+            target_size=target_features_size, lr=lr, batch_size=batch_size
+        )
+    else:
+        model = LightningGraphConv(
+            target_size=target_features_size,
+            input_size=node_feature_size,
+            hidden_size=hidden_size,
+            lr=lr,
+            graph_level_mlp_layers=graph_level_mlp_layers,
+            dropout_conv=dropout_conv,
+            dropout_mlp=dropout_mlp,
+            batch_size=batch_size,
+        )
     trainable_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"{model}")
     print(f"Total trainable parameters: {trainable_parameters}")
@@ -98,11 +102,9 @@ def experiment(config, log_path="tb-logs", patience=10):
                 save_on_train_epoch_end=False,
                 save_last=True,
             ),
-             # EarlyStopping patience: number of validation epochs without improvement
-            EarlyStopping(
-                monitor="loss/val", patience=patience
-            ),  
+            # EarlyStopping patience: number of validation epochs without improvement
+            EarlyStopping(monitor="loss/val", patience=patience),
         ],
     )
     trainer.fit(model, train_loader, val_loader)
-    trainer.test(model, test_loader, ckpt_path='best')
+    trainer.test(model, test_loader, ckpt_path="best")

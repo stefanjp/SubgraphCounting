@@ -15,10 +15,12 @@ if __name__ == "__main__":
     # Ensure that all operations are deterministic on GPU (if used) for reproducibility
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+    dataset = 'ZINC-cycle-3-cycle-6'
     # ranodm search
     sweep_configuration = {
-        'batch_size': [64, 128, 512],
-        'dataset': ['ZINC-cycle-3-cycle-6'],
+        'model': ['default'],
+        'batch_size': [64],
+        'dataset': [dataset],
         'epochs': [200],
         'lr': [0.001],
         'hidden_size': [160],
@@ -29,9 +31,9 @@ if __name__ == "__main__":
     print('Running baseline algorithms')
     baseline({
         'batch_size': 1000,
-        'dataset': 'ZINC-cycle-3-cycle-6',
+        'dataset': dataset,
     })
-    configs = get_configs(sweep_configuration, 6)
+    configs = get_configs(sweep_configuration, 2)
     print(f'Running {len(configs)} configurations')
     for config in configs:
         print(f'Running following configuration: {config}')
