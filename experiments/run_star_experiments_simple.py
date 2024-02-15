@@ -1,5 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore", message=".*audio.*", category=UserWarning)
+warnings.filterwarnings("ignore", message=".*does not have many workers which may be a bottleneck.*", category=UserWarning)
+
 import torch
 import torch_geometric as pyg
 import pytorch_lightning as L
@@ -15,16 +17,17 @@ if __name__ == "__main__":
     # Ensure that all operations are deterministic on GPU (if used) for reproducibility
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    dataset = 'ZINC-cycle-3-cycle-6'
+    dataset = 'ZINC-star-3'
     # ranodm search
     sweep_configuration = {
-        'model': ['gin'],
         'batch_size': [64],
         'dataset': [dataset],
-        'epochs': [500],
+        'model': ['GraphConv'],
+        'epochs': [200],
         'lr': [0.001],
-        'hidden_size': [160],
+        'node_level_conv_layers': [3],
         'dropout_conv': [True],
+        'hidden_size': [160],
         'graph_level_mlp_layers': [2],
         'dropout_mlp': [True],
     }
@@ -37,4 +40,4 @@ if __name__ == "__main__":
     print(f'Running {len(configs)} configurations')
     for config in configs:
         print(f'Running following configuration: {config}')
-        experiment(config, patience=50)
+        experiment(config, patience=20)

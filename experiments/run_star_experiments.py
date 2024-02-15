@@ -17,21 +17,23 @@ if __name__ == "__main__":
     # Ensure that all operations are deterministic on GPU (if used) for reproducibility
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+    dataset = 'ZINC-star-3-star-4'
     # ranodm search
     sweep_configuration = {
         'batch_size': [64],
-        'dataset': ['ZINC-star-3-star-4'],
+        'dataset': [dataset],
+        'model': ['GraphConv'],
         'epochs': [200],
         'lr': [0.001],
-        'hidden_size': [80, 160],
         'dropout_conv': [True],
-        'graph_level_mlp_layers': [2, 4],
+        'hidden_size': [160],
+        'graph_level_mlp_layers': [2],
         'dropout_mlp': [True],
     }
     print('Running baseline algorithms')
     baseline({
         'batch_size': 1000,
-        'dataset': 'ZINC-star-3-star-4',
+        'dataset': dataset,
     })
     configs = get_configs(sweep_configuration, 4)
     print(f'Running {len(configs)} configurations')
