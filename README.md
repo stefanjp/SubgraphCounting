@@ -41,18 +41,22 @@ Code was developed and tested on Windows 11 with following package versions:
 * pytorch==1.12.0
 
 ## Experiments
-From the project root directory execute following python files:
-- python experiments/run_experiments.py
-   - ZINC-star-3-star-4* experiments
-     - loss
+From the project root directory execute following python file:
+
+`python experiments/run_experiments.py`
+- ZINC-star-3-star-4* experiments
+   - loss
 /test-feature-0 correspons to the MSE of 3-star
-     - loss
+   - loss
 /test-feature-1 correspons to the MSE of 4-star
-   - ZINC-cycle-3-cycle-6* experiments
-     - loss
+- ZINC-cycle-3-cycle-6* experiments
+   - loss
 /test-feature-0 correspons to the MSE of 3-cycle
-     - loss
+   - loss
 /test-feature-1 correspons to the MSE of 6-cycle
 
+For the experiments considering node labels, execute following experiment:
+
+`python experiments/run_cycle_experiments_node_features.py`
 
 The baseline results as well as the model results will be logged in the tb-logs directory that can be visualized with tensorboard.
