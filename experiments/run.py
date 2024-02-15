@@ -6,7 +6,7 @@ import pytorch_lightning as L
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 
-from experiments.model import LightningBaseline, LightningGraphConv, LightningI2GNN
+from experiments.model import LightningBaseline, LightningGraphConv, LightningGIN, LightningGATv2, LightningOthers
 from experiments.util import get_dataset
 
 
@@ -69,21 +69,57 @@ def experiment(config, log_path="tb-logs", patience=10):
     dropout_conv = config["dropout_conv"]
     dropout_mlp = config["dropout_mlp"]
     graph_level_mlp_layers = config["graph_level_mlp_layers"]
-    if "model" in config and config["model"] == "i2gnn":
-        model = LightningI2GNN(
-            target_size=target_features_size, lr=lr, batch_size=batch_size
-        )
-    else:
-        model = LightningGraphConv(
+    node_level_conv_layers = config["node_level_conv_layers"] if "node_level_conv_layers" in config else 5
+    if "model" in config and config["model"] == "gin":
+        model = LightningGIN(
             target_size=target_features_size,
             input_size=node_feature_size,
             hidden_size=hidden_size,
             lr=lr,
+            conv_layers=node_level_conv_layers,
+            graph_level_mlp_layers=graph_level_mlp_layers,
+            dropout_conv=dropout_conv,
+            dropout_mlp=dropout_mlp,
+            batch_size=batch_size
+        )
+    elif "model" in config and config["model"] == "gat-v2":
+        model = LightningGATv2(
+            target_size=target_features_size,
+            input_size=node_feature_size,
+            hidden_size=hidden_size,
+            lr=lr,
+            conv_layers=node_level_conv_layers,
             graph_level_mlp_layers=graph_level_mlp_layers,
             dropout_conv=dropout_conv,
             dropout_mlp=dropout_mlp,
             batch_size=batch_size,
         )
+    elif "model" in config and config["model"] == 'GraphConv':
+        model = LightningGraphConv(
+            target_size=target_features_size,
+            input_size=node_feature_size,
+            hidden_size=hidden_size,
+            lr=lr,
+            conv_layers=node_level_conv_layers,
+            graph_level_mlp_layers=graph_level_mlp_layers,
+            dropout_conv=dropout_conv,
+            dropout_mlp=dropout_mlp,
+            batch_size=batch_size,
+        )
+    else:
+        model = LightningOthers(
+            target_size=target_features_size,
+            input_size=node_feature_size,
+            hidden_size=hidden_size,
+            lr=lr,
+            conv_layers=node_level_conv_layers,
+            graph_level_mlp_layers=graph_level_mlp_layers,
+            dropout_conv=dropout_conv,
+            dropout_mlp=dropout_mlp,
+            batch_size=batch_size,
+            model=config["model"]
+        )
+
     trainable_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"{model}")
     print(f"Total trainable parameters: {trainable_parameters}")

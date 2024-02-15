@@ -65,6 +65,18 @@ def get_dataset(dataset_id, path="./data/datasets/ZINC"):
         return datasets.get_zinc_dataset(
             f"{path}/cycle3-9", pre_transform=pre_transform, transform=transform
         )
+    elif dataset_id == "ZINC-cycle-6":
+        # load ZINC dataset with annotated subgraph isomorphisms of selected pattern(s)
+        subgraph_patterns = []
+        for i in range(3, 10):
+            subgraph_pattern = pattern.create_cycle(i)
+            subgraph_patterns.append(conversion.igraph_to_pyg_graph(subgraph_pattern))
+        pre_transform = AnnotateSubgraphIsomorphisms(subgraph_patterns, True)
+        transform = Compose([NormNodeAttribute("x", norm=1 / 20), Select("y", 0, [1])])
+        # subgraph isomorphism of cycle 6 is annotated
+        return datasets.get_zinc_dataset(
+            f"{path}/cycle3-9", pre_transform=pre_transform, transform=transform
+        )
     elif dataset_id == "ZINC-star-3-star-4":
         subgraph_patterns = []
         # star 3 has 4 nodes and star 9 has 10 nodes
@@ -75,6 +87,20 @@ def get_dataset(dataset_id, path="./data/datasets/ZINC"):
         pre_transform = AnnotateSubgraphIsomorphisms(subgraph_patterns, True)
         transform = Compose(
             [NormNodeAttribute("x", norm=1 / 20), Select("y", 0, [0, 1])]
+        )
+        return datasets.get_zinc_dataset(
+            f"{path}/star3-9", pre_transform=pre_transform, transform=transform
+        )
+    elif dataset_id == "ZINC-star-3":
+        subgraph_patterns = []
+        # star 3 has 4 nodes and star 9 has 10 nodes
+        for i in range(4, 11):
+            subgraph_pattern = pattern.create_star(i)
+            subgraph_patterns.append(conversion.igraph_to_pyg_graph(subgraph_pattern))
+
+        pre_transform = AnnotateSubgraphIsomorphisms(subgraph_patterns, True)
+        transform = Compose(
+            [NormNodeAttribute("x", norm=1 / 20), Select("y", 0, [0])]
         )
         return datasets.get_zinc_dataset(
             f"{path}/star3-9", pre_transform=pre_transform, transform=transform

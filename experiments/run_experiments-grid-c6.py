@@ -1,5 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore", message=".*audio.*", category=UserWarning)
+warnings.filterwarnings("ignore", message=".*does not have many workers which may be a bottleneck.*", category=UserWarning)
+
 import torch
 import torch_geometric as pyg
 import pytorch_lightning as L
@@ -15,28 +17,32 @@ if __name__ == "__main__":
     # Ensure that all operations are deterministic on GPU (if used) for reproducibility
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
+    large_experiment_name = 'hyperparameter-optimization-graph-conv-c6'
+    datasets = ['ZINC-cycle-6'] #, 'ZINC-star-3-star-4', 'ZINC-cycle-3-cycle-6'
     # ranodm search
-    dataset = 'ZINC-cycle-6-node-features'
-    large_experiment_name = 'experiments-with-labels'
     sweep_configuration = {
         'batch_size': [64],
-        'dataset': [dataset],
-        'model': ['GraphConv'], 
+        'dataset': datasets, #
+        'model': ['GraphConv'], # , 'gin', 'gat-v2', 'GraphSAGE'
         'epochs': [150],
-        'node_level_conv_layers': [4, 6],
-        'lr': [0.01],
-        'hidden_size': [160],
+        'lr': [.01, .005, .001],
+        'node_level_conv_layers': [2,3,4,6],
         'dropout_conv': [True],
+        'hidden_size': [40, 80, 160],
         'graph_level_mlp_layers': [2],
         'dropout_mlp': [True],
     }
+    '''
     print('Running baseline algorithms')
-    baseline({
-        'batch_size': 1000,
-        'dataset': dataset,
-    })
-    configs = get_configs(sweep_configuration)
+    for dataset in datasets:
+        baseline({
+            'batch_size': 1000,
+            'dataset': dataset,
+        })
+    '''
+    configs = get_configs(sweep_configuration, None)
     print(f'Running {len(configs)} configurations')
-    for config in configs:
-        print(f'Running following configuration: {config}')
+    for i, config in enumerate(configs):
+        print(f'Running configuration {i+1}/{len(configs)}: {config}')
         experiment(config, log_path=f'tb-logs-{large_experiment_name}', patience=1000)
