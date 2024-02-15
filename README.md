@@ -42,17 +42,17 @@ Code was developed and tested on Windows 11 with following package versions:
 
 ## Experiments
 From the project root directory execute following python files:
-- python experiments/run_star_experiments.py
-   - loss
-/val-feature-0 correspons to the MSE of 3-star
-   - loss
-/val-feature-1 correspons to the MSE of 4-star
-- python experiments/run_cycle_experiments.py
-   - loss
-/val-feature-0 correspons to the MSE of 3-cycle
-   - loss
-/val-feature-1 correspons to the MSE of 6-cycle
-- python experiments/run_cycle_experiments_node_features.py
-   - same as above
+- python experiments/run_experiments.py
+   - ZINC-star-3-star-4* experiments
+     - loss
+/test-feature-0 correspons to the MSE of 3-star
+     - loss
+/test-feature-1 correspons to the MSE of 4-star
+   - ZINC-cycle-3-cycle-6* experiments
+     - loss
+/test-feature-0 correspons to the MSE of 3-cycle
+     - loss
+/test-feature-1 correspons to the MSE of 6-cycle
+
 
 The baseline results as well as the model results will be logged in the tb-logs directory that can be visualized with tensorboard.
